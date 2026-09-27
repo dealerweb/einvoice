@@ -1,0 +1,170 @@
+dealerweb/einvoice
+Copyright (c) 2026 DealerWeb
+
+Licensed under the MIT License (see LICENSE) - provided "as is", without any warranty or liability.
+Third-party material in this package keeps its own license and terms, listed below.
+
+
+EN 16931 - CEN and DIN
+======================
+
+This software is an application of EN 16931-1:2017-06 "Electronic invoicing - Part 1: Semantic
+data model of the core elements of an electronic invoice" and of CEN/TS 16931-2:2017-06 "List of
+syntaxes that comply with EN 16931-1". It uses information from these publications, in particular
+the names and identifiers of the business terms and business groups (BT-n, BG-n). The reproduction
+is permitted with the permission of CEN and DIN, the owners of the copyright.
+
+CEN and DIN assume no liability with regard to the use of the content and the use of this
+application and give no express or implied warranties for it. In case of doubt, the publications
+of DIN (EN 16931-1:2017-06, CEN/TS 16931-2:2017-06) provide the official text of the European
+standard.
+
+
+KoSIT - XRechnung visualization
+===============================
+
+Koordinierungsstelle für IT-Standards (KoSIT), Apache License 2.0 (see resources/kosit/LICENSE).
+
+resources/compiled/ubl-invoice.php, ubl-creditnote.php, cii.php and model.php are compiled from the
+stylesheets and the semantic model of https://github.com/itplr-kosit/xrechnung-visualization - the
+mapping of UBL and CII to the model of EN 16931.
+
+Release and files: resources/kosit/SOURCE.md.
+
+
+ZUGFeRD / Factur-X - FeRD (AWV e.V.) and FNFE-MPE
+================================================
+
+From the release package ZUGFeRD 2.5.2 / Factur-X 1.09.2 of the Forum elektronische Rechnung
+Deutschland (FeRD) at the Arbeitsgemeinschaft für wirtschaftliche Verwaltung e.V. (AWV), published
+jointly with the Forum National de la Facture Électronique et des Marchés Publics Électroniques
+(FNFE-MPE):
+
+- resources/ferd/schema/  per profile the XML schemas and the code lists the rules load, unchanged
+- compiled from it:       resources/compiled/facturx-fields.php (the ids, paths, data types and
+                          profiles of the field list - the names of the fields are the package's
+                          own), resources/compiled/cii-tree.php (the element tree the generator
+                          writes along) and resources/compiled/validation/facturx-*.php (the
+                          Schematron rules of the profiles)
+
+Terms: https://www.ferd-net.de/en/ueber-uns/ressourcen-1/veroeffentlichungen/disclaimer-and-rights-of-use-zugferd
+FeRD grants a license for the use of the copyrighted ZUGFeRD data format - irrevocable, free of
+charge, including the right to further development, further processing and connection with other
+products; the technical artefacts (schemas, Schematron) are licensed under the Apache License 2.0.
+Content and structure of the ZUGFeRD specification are protected by copyright; reproducing texts of
+the specification requires the approval of AWV e.V. The word and figurative marks "FeRD" and
+"ZUGFeRD" are protected. Factur-X is the joint French-German specification of FNFE-MPE and FeRD.
+
+Release and files: resources/ferd/SOURCE.md.
+
+
+Validation - KoSIT, CEN, OASIS and UN/CEFACT
+============================================
+
+From the configuration of the KoSIT validator for XRechnung 3.0.2 and EN 16931
+(https://github.com/itplr-kosit/validator-configuration-xrechnung):
+
+- resources/kosit-validator/resources/ubl/2.1/xsd/: the XML schemas of UBL 2.1, unchanged.
+  Copyright (c) OASIS Open 2013. All Rights Reserved.
+- resources/kosit-validator/resources/cii/16b/xsd/: the XML schemas of CII D16B, unchanged.
+  Copyright (C) UN/CEFACT (2016). All Rights Reserved. They may be copied and distributed without
+  restriction provided the copyright notice and the paragraph of permissions are kept - the files
+  are unchanged and carry both.
+- resources/compiled/validation/en16931-*.php: compiled from the Schematron rules of EN 16931
+  (CEN/TC 434, https://github.com/ConnectingEurope/eInvoicing-EN16931), European Union Public
+  Licence 1.2 (resources/kosit-validator/LICENSE-EUPL-1.2)
+- resources/compiled/validation/xrechnung-*.php and scenarios.php: compiled from the Schematron
+  rules of XRechnung 3.0.2 and the scenarios of the configuration, Koordinierungsstelle für
+  IT-Standards (KoSIT), Apache License 2.0 (resources/kosit-validator/LICENSE)
+
+Each compiled rule set names its source and licence in its first line.
+
+Release and files: resources/kosit-validator/SOURCE.md.
+
+
+Peppol BIS Billing 3.0
+======================
+
+resources/compiled/validation/peppol-*.php: the rules of Peppol BIS Billing 3.0 of OpenPeppol as
+this package implements them - its own work under the MIT License, not the validation artefacts of
+OpenPeppol; each rule keeps the identifier the specification gives it. See resources/peppol/SOURCE.md.
+
+
+EN 16931 code lists
+===================
+
+resources/compiled/codelists.php holds the codes and English names of the EN 16931 code lists,
+version v17b, published by the European Commission for the implementation of EN 16931 (as
+distributed in the FeRD release package). The codes belong to their maintainers: UN/CEFACT (UNTDID,
+UN/ECE Recommendations 19, 20 and 21), ISO (3166-1, 4217, 639-2, ISO/IEC 6523), the European
+Commission (EAS, VATEX) and FeRD / FNFE-MPE (the Factur-X lists). Incoterms® is a registered
+trademark of the International Chamber of Commerce.
+
+German and French names that no official source provides are the package's own translation of the
+English names, the English names of the MIME types its own wording (MIT, like the rest of the package).
+
+
+Unicode CLDR
+============
+
+resources/compiled/codelists.php holds display names of countries, currencies and languages in
+German, English and French from the Unicode Common Locale Data Repository (release 48.2.2 of
+https://github.com/unicode-org/cldr-json). Release and checksums: resources/cldr/SOURCE.md.
+    UNICODE LICENSE V3
+
+    COPYRIGHT AND PERMISSION NOTICE
+
+    Copyright © 2015-2024 Unicode, Inc.
+
+    NOTICE TO USER: Carefully read the following legal agreement. BY
+    DOWNLOADING, INSTALLING, COPYING OR OTHERWISE USING DATA FILES, AND/OR
+    SOFTWARE, YOU UNEQUIVOCALLY ACCEPT, AND AGREE TO BE BOUND BY, ALL OF THE
+    TERMS AND CONDITIONS OF THIS AGREEMENT. IF YOU DO NOT AGREE, DO NOT
+    DOWNLOAD, INSTALL, COPY, DISTRIBUTE OR USE THE DATA FILES OR SOFTWARE.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of data files and any associated documentation (the "Data Files") or
+    software and any associated documentation (the "Software") to deal in the
+    Data Files or Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, and/or sell
+    copies of the Data Files or Software, and to permit persons to whom the
+    Data Files or Software are furnished to do so, provided that either (a)
+    this copyright and permission notice appear with all copies of the Data
+    Files or Software, or (b) this copyright and permission notice appear in
+    associated Documentation.
+
+    THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+    KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF
+    THIRD PARTY RIGHTS.
+
+    IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE
+    BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES,
+    OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+    WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+    ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THE DATA
+    FILES OR SOFTWARE.
+
+    Except as contained in this notice, the name of a copyright holder shall
+    not be used in advertising or otherwise to promote the sale, use or other
+    dealings in these Data Files or Software without prior written
+    authorization of the copyright holder.
+
+    SPDX-License-Identifier: Unicode-3.0
+
+
+sRGB colour profile
+===================
+
+resources/icc/sRGB-v2-micro.icc: compact ICC profile of the sRGB colour space from
+https://github.com/saucecontrol/Compact-ICC-Profiles, Creative Commons Zero v1.0 Universal (see resources/icc/LICENSE) -
+dedicated to the public domain. Embedded as the output intent of the ZUGFeRD / Factur-X PDFs of the generator.
+
+
+Dependencies
+============
+
+Not part of this package: Composer installs them as separate packages, each under its own license.
+The PDF output (Render\PdfRenderer) uses dompdf/dompdf (LGPL-2.1) with dompdf/php-font-lib
+(LGPL-2.1-or-later), dompdf/php-svg-lib (LGPL-3.0-or-later), masterminds/html5 (MIT) and
+sabberworm/php-css-parser (MIT).

@@ -1,0 +1,631 @@
+/*
+ * dealerweb/einvoice - rendered electronic invoice, laid out like a German business letter: the
+ * issuer in the letterhead, the addressee below it with the information block beside it, the legal
+ * data of the issuer in the footer of every page.
+ *
+ * dompdf knows neither flexbox nor grid nor custom properties: the layout uses tables, colours
+ * are written out. The bottom margin of the page and the position of the footer depend on the
+ * height of the footer - the template sets them after this stylesheet.
+ */
+
+@page {
+    size: A4 portrait;
+    margin: 12mm 18mm 30mm 18mm;
+}
+
+body {
+    margin: 0;
+    background: #ffffff;
+    color: #1f2328;
+    font-family: "DejaVu Sans", "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 8.5pt;
+    line-height: 1.35;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+td,
+th {
+    padding: 0;
+    text-align: left;
+    vertical-align: top;
+}
+
+p {
+    margin: 0;
+}
+
+/* On screen the document is a sheet of paper with the margins of the page. */
+.screen {
+    background: #eef1f4;
+}
+
+.screen .sheet {
+    width: 210mm;
+    margin: 20px auto;
+    padding: 12mm 18mm 12mm 18mm;
+    box-sizing: border-box;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+
+/* ------------------------------------------------------------------ letterhead, addressee, information block */
+
+table.letterhead td {
+    text-align: right;
+}
+
+.issuer-name {
+    color: #1f4e79;
+    font-size: 15pt;
+    font-weight: bold;
+    line-height: 1.15;
+}
+
+.issuer-trading {
+    margin-top: 1pt;
+    color: #1f4e79;
+    font-size: 9.5pt;
+    font-weight: bold;
+}
+
+.issuer-address {
+    margin-top: 3pt;
+    color: #5f6b7a;
+    font-size: 7.5pt;
+}
+
+table.address-row {
+    margin-top: 10mm;
+}
+
+td.addressee {
+    width: 80mm;
+}
+
+td.gutter {
+    width: 20mm;
+}
+
+.return-line {
+    margin-bottom: 1.5mm;
+    color: #5f6b7a;
+    font-size: 6.5pt;
+    line-height: 1.25;
+}
+
+.recipient {
+    font-size: 9.5pt;
+    line-height: 1.3;
+}
+
+/* the information block starts level with the first line of the address */
+/* the title of the document heads the information block, level with the return address */
+table.info {
+    margin-top: 2mm;
+}
+
+table.info td {
+    padding: 0.4pt 0;
+    font-size: 7.5pt;
+}
+
+table.info td.key {
+    width: 30mm;
+    padding-right: 3mm;
+    color: #5f6b7a;
+}
+
+/* ------------------------------------------------------------------ title and references */
+
+.banner {
+    margin-top: 5mm;
+    padding: 5pt 9pt;
+    border-radius: 3pt;
+    font-weight: bold;
+}
+
+.banner-test {
+    background: #b42318;
+    color: #ffffff;
+    font-size: 10.5pt;
+    letter-spacing: 0.04em;
+    text-align: center;
+}
+
+.banner-warning {
+    border: 0.8pt solid #e9a23b;
+    background: #fff4e5;
+    color: #6b3a00;
+}
+
+h1 {
+    margin: 0;
+    color: #1f4e79;
+    font-size: 13pt;
+    line-height: 1.2;
+}
+
+.marks {
+    margin-top: 2pt;
+}
+
+.badge {
+    padding: 1pt 6pt;
+    border-radius: 3pt;
+    background: #e3edf7;
+    color: #1f4e79;
+    font-size: 7.5pt;
+    font-weight: bold;
+}
+
+.subtitle {
+    color: #5f6b7a;
+    font-size: 8pt;
+}
+
+table.references {
+    margin-top: 8mm;
+    border-top: 0.8pt solid #c9d3de;
+    border-bottom: 0.8pt solid #c9d3de;
+}
+
+table.references td {
+    padding: 1.6pt 0;
+}
+
+table.references td.key {
+    width: 21%;
+    padding-right: 6pt;
+    color: #5f6b7a;
+}
+
+table.references td.value {
+    width: 29%;
+    padding-right: 10pt;
+}
+
+/* the further parties, one row each below the references */
+table.references tr.party td {
+    padding: 3pt 0;
+    border-top: 0.5pt solid #e4e9ee;
+}
+
+table.references tr.party td.value {
+    padding-right: 0;
+}
+
+.party-details {
+    margin-top: 1pt;
+    color: #4a5561;
+    font-size: 7.5pt;
+}
+
+.hint {
+    margin-top: 3pt;
+    color: #6b3a00;
+}
+
+.caption {
+    margin-bottom: 2pt;
+    color: #5f6b7a;
+    font-size: 7.5pt;
+    font-weight: bold;
+}
+
+.kv td {
+    padding: 0.6pt 0;
+}
+
+.kv td.key {
+    width: 36%;
+    padding-right: 8pt;
+    color: #5f6b7a;
+}
+
+.small {
+    font-size: 7.5pt;
+}
+
+.muted {
+    color: #5f6b7a;
+}
+
+/* ------------------------------------------------------------------ lines */
+
+table.lines {
+    margin-top: 6mm;
+    table-layout: fixed;
+}
+
+/* Many lines stand in several tables (one table makes dompdf slow) - they follow without a gap. */
+table.lines + table.lines {
+    margin-top: 0;
+}
+
+p.no-lines {
+    margin-top: 6mm;
+}
+
+table.lines th {
+    padding: 3pt 4pt;
+    border-bottom: 1.2pt solid #1f4e79;
+    color: #1f4e79;
+    font-size: 7.5pt;
+    font-weight: bold;
+}
+
+table.lines td {
+    padding: 3pt 4pt;
+    border-bottom: 0.5pt solid #d8dee4;
+}
+
+table.lines tr {
+    page-break-inside: avoid;
+}
+
+/* A line whose texts go on in the next row (long descriptions): one block, without the rule between its rows. */
+table.lines tr.continued td {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+table.lines tr.continuation td {
+    padding-top: 0;
+}
+
+/* The head of a table never stays behind alone at the foot of a page. */
+table.lines thead tr,
+table.list thead tr {
+    page-break-after: avoid;
+}
+
+/* widths in percent - dompdf's fixed table layout ignores widths in millimetres */
+/* six digits ("000010") fit; longer line identifiers stand in the details of the line */
+.col-pos {
+    width: 8%;
+}
+
+.col-article {
+    width: 15%;
+}
+
+/* article numbers of 13 digits (GTIN) fit on one line */
+table.lines td.article {
+    font-size: 7.5pt;
+}
+
+.col-quantity {
+    width: 11%;
+}
+
+.col-price {
+    width: 12%;
+}
+
+.col-vat {
+    width: 7%;
+}
+
+.col-amount {
+    width: 13%;
+}
+
+table.lines th:first-child,
+table.lines td:first-child {
+    padding-left: 0;
+}
+
+table.lines th:last-child,
+table.lines td:last-child {
+    padding-right: 0;
+}
+
+/* Long words (identifiers, URLs, positions like "Zeitschrift [...]") break instead of running into the next column. */
+table.lines td,
+table.list td,
+table.notes td,
+table.info td.value,
+table.references td.value,
+.kv td.value,
+.page-footer td {
+    overflow-wrap: anywhere;
+}
+
+.num,
+table.lines td.num,
+table.list td.num {
+    text-align: right;
+    white-space: nowrap;
+    overflow-wrap: normal;
+}
+
+/* the quantity may wrap between number and unit, the VAT between rate and category ("10 %" "AA") */
+table.lines td.quantity,
+table.lines td.vat,
+table.list td.vat {
+    white-space: normal;
+}
+
+th.num {
+    text-align: right;
+}
+
+.item-name {
+    font-weight: bold;
+}
+
+.item-text {
+    margin-top: 1pt;
+}
+
+.item-details {
+    margin-top: 1pt;
+    color: #4a5561;
+    font-size: 7.5pt;
+}
+
+.price-basis {
+    color: #5f6b7a;
+    font-size: 7pt;
+}
+
+.depth-1 .item {
+    padding-left: 11pt;
+}
+
+.depth-2 .item {
+    padding-left: 22pt;
+}
+
+.depth-3 .item {
+    padding-left: 33pt;
+}
+
+.depth-4 .item {
+    padding-left: 44pt;
+}
+
+.row-sub td,
+.row-information td {
+    background: #f8fafb;
+}
+
+.row-sub .num,
+.row-information .num {
+    color: #5f6b7a;
+}
+
+.row-information .item-name {
+    font-weight: normal;
+    font-style: italic;
+}
+
+.tag {
+    color: #5f6b7a;
+    font-size: 7pt;
+    font-style: italic;
+}
+
+.lines-hint {
+    margin-top: 3pt;
+    color: #5f6b7a;
+    font-size: 7pt;
+}
+
+/* ------------------------------------------------------------------ headings, lists */
+
+h2 {
+    margin: 12pt 0 4pt;
+    padding-bottom: 2pt;
+    border-bottom: 0.8pt solid #c9d3de;
+    color: #1f4e79;
+    font-size: 9.5pt;
+    page-break-after: avoid;
+}
+
+.keep {
+    page-break-inside: avoid;
+}
+
+table.list th {
+    padding: 2.5pt 4pt;
+    border-bottom: 0.8pt solid #1f4e79;
+    color: #1f4e79;
+    font-size: 7.5pt;
+    font-weight: bold;
+}
+
+table.list td {
+    padding: 2.5pt 4pt;
+    border-bottom: 0.5pt solid #d8dee4;
+}
+
+table.list tr.extra td {
+    padding-top: 0;
+}
+
+table.list th:first-child,
+table.list td:first-child {
+    padding-left: 0;
+}
+
+table.list th:last-child,
+table.list td:last-child {
+    padding-right: 0;
+}
+
+/* a row with an additional line below shares its bottom border with it */
+table.list tr.has-extra td {
+    border-bottom: none;
+}
+
+/* A long text goes on in the rows below (dompdf never splits a row): one block, without rules. */
+table.list tr.continued td {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+table.list tr.continuation td {
+    padding-top: 0;
+}
+
+/* ------------------------------------------------------------------ totals */
+
+.summary {
+    margin-top: 4mm;
+    page-break-inside: avoid;
+}
+
+td.summary-space {
+    width: 38%;
+}
+
+.totals td {
+    padding: 1.4pt 0;
+}
+
+.totals td.num {
+    width: 32mm;
+    padding-left: 6pt;
+}
+
+.totals tr.subtotal td {
+    border-top: 0.5pt solid #c9d3de;
+    font-weight: bold;
+}
+
+.totals tr.due td {
+    padding-top: 4pt;
+    border-top: 1.2pt solid #1f4e79;
+    color: #1f4e79;
+    font-size: 10pt;
+    font-weight: bold;
+}
+
+.vat-note {
+    margin-top: 3pt;
+    color: #4a5561;
+    font-size: 7.5pt;
+}
+
+/* ------------------------------------------------------------------ payment, notes */
+
+.columns > tbody > tr > td {
+    width: 50%;
+}
+
+.columns > tbody > tr > td.left {
+    padding-right: 10pt;
+}
+
+.columns > tbody > tr > td.right {
+    padding-left: 10pt;
+}
+
+.instruction {
+    margin-bottom: 6pt;
+}
+
+.instruction-title {
+    font-weight: bold;
+}
+
+.terms-list {
+    margin: 0 0 4pt;
+    padding-left: 12pt;
+}
+
+/* a long note spans several rows (a page breaks only between rows); the rule follows its last one */
+table.notes td {
+    padding: 0;
+}
+
+table.notes tr {
+    page-break-inside: avoid;
+}
+
+table.notes tr.first td {
+    padding-top: 2pt;
+}
+
+table.notes tr.last td {
+    padding-bottom: 2pt;
+    border-bottom: 0.5pt solid #e4e9ee;
+}
+
+table.notes td.key {
+    width: 24%;
+    padding-right: 8pt;
+    color: #5f6b7a;
+    font-size: 7.5pt;
+    font-weight: bold;
+}
+
+.further-title {
+    margin: 5pt 0 1pt;
+    color: #5f6b7a;
+    font-size: 7.5pt;
+    font-weight: bold;
+}
+
+/* ------------------------------------------------------------------ end of the document, footer */
+
+.document-end {
+    margin-top: 10mm;
+    color: #5f6b7a;
+    font-size: 7pt;
+}
+
+.document-end .reading-aid {
+    color: #1f2328;
+    font-weight: bold;
+}
+
+/* The legal data of the issuer: in the PDF fixed at the foot of every page (the template sets its
+   position), on screen - and in the PDF where it is too high for every page - at the end of the sheet. */
+.page-footer {
+    padding-top: 2mm;
+    border-top: 0.5pt solid #c9d3de;
+    color: #5f6b7a;
+    font-size: 6.5pt;
+    line-height: 1.35;
+}
+
+.page-footer.is-fixed {
+    position: fixed;
+    left: 0;
+    right: 0;
+}
+
+.page-footer.is-end {
+    margin-top: 10mm;
+}
+
+.footer-column + .footer-column {
+    margin-top: 1.5mm;
+}
+
+.page-footer td {
+    padding-right: 3mm;
+}
+
+.page-footer td:last-child {
+    padding-right: 0;
+}
+
+.columns-2 td {
+    width: 50%;
+}
+
+.columns-3 td {
+    width: 33.33%;
+}
+
+.page-footer .strong {
+    color: #1f2328;
+    font-weight: bold;
+}

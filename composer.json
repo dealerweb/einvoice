@@ -1,0 +1,51 @@
+{
+    "name": "dealerweb/einvoice",
+    "description": "E-invoicing in pure PHP: read, validate, visualize and create XRechnung, ZUGFeRD / Factur-X and Peppol BIS invoices (EN 16931, UBL and CII) - with the verdicts of the official validators, no Java needed.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "e-invoicing",
+        "e-invoice",
+        "einvoice",
+        "e-rechnung",
+        "electronic-invoicing",
+        "invoice",
+        "xrechnung",
+        "zugferd",
+        "factur-x",
+        "en16931",
+        "peppol",
+        "ubl",
+        "cii",
+        "validator",
+        "schematron",
+        "kosit",
+        "viewer",
+        "visualizer",
+        "parser",
+        "generator",
+        "pdf",
+        "pdfa",
+        "html"
+    ],
+    "homepage": "https://github.com/dealerweb/einvoice",
+    "support": {
+        "issues": "https://github.com/dealerweb/einvoice/issues",
+        "source": "https://github.com/dealerweb/einvoice",
+        "security": "https://github.com/dealerweb/einvoice/security/policy"
+    },
+    "require": {
+        "php": "^8.2",
+        "ext-dom": "*",
+        "ext-libxml": "*",
+        "ext-mbstring": "*",
+        "ext-xmlreader": "*",
+        "ext-zlib": "*",
+        "dompdf/dompdf": "^3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dealerweb\\EInvoice\\": "src/"
+        }
+    }
+}
