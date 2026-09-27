@@ -37,7 +37,7 @@ together.
 | Script | Shows |
 |---|---|
 | `read/read-an-invoice.php` | an invoice read: parties, lines, VAT, totals, payment - and what was not read |
-| `read/read-a-zugferd-pdf.php` | a ZUGFeRD / Factur-X PDF read, with the fields only EXTENDED has |
+| `read/read-a-zugferd-pdf.php` | a ZUGFeRD / Factur-X PDF read, with the fields only EXTENDED has, and its XML as embedded |
 | `read/read-every-input-file.php` | every example file read, its key facts on one line |
 | `check/check-a-file.php` | the report of the validator for one file: verdict, profile, rules, messages |
 | `check/check-every-input-file.php` | every example file checked, one line each |

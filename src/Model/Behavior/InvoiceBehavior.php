@@ -68,6 +68,19 @@ trait InvoiceBehavior
     }
 
     /**
+     * The XML of the invoice a ZUGFeRD / Factur-X PDF carries - factur-x.xml, zugferd-invoice.xml or xrechnung.xml -
+     * exactly as the sender embedded it: byte for byte, neither read nor written anew. The original of an invoice
+     * received as PDF, to store next to it; read it with fromXml(), check it with Validator.
+     *
+     * @throws InvalidPdf the content is no PDF, or the PDF is damaged beyond repair or encrypted
+     * @throws UnsupportedDocument the PDF carries no invoice file
+     */
+    public static function xmlFromPdf(string $pdf): string
+    {
+        return HybridPdf::invoiceXml($pdf);
+    }
+
+    /**
      * An invoice read from a file: its XML, or a ZUGFeRD / Factur-X PDF (see fromPdf()) - which one, the file tells. A
      * path or a file:// URL, no stream wrapper (http, data, php://filter): reading does not reach the network.
      *

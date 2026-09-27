@@ -7,6 +7,13 @@ part of the public API and may change in any release.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-27
+
+### Added
+
+- `Invoice::xmlFromPdf()`: the XML a ZUGFeRD / Factur-X PDF carries, byte for byte as the sender embedded it - the
+  original of an invoice received as PDF, to store next to it.
+
 ## [1.0.0] - 2026-09-27
 
 First public release.
@@ -69,5 +76,6 @@ First public release.
   ZUGFeRD / Factur-X MINIMUM to EXTENDED as XML and in your own PDF, EN 16931 in UBL, credit notes, Peppol BIS - and
   for reading, checking, converting, showing, attachments, names and errors, with example files of every format.
 
-[Unreleased]: https://github.com/dealerweb/einvoice/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/dealerweb/einvoice/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/dealerweb/einvoice/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/dealerweb/einvoice/releases/tag/v1.0.0

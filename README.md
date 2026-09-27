@@ -66,6 +66,7 @@ use Dealerweb\EInvoice\Invoice;
 $invoice = Invoice::fromFile('invoice.xml');      // XML or ZUGFeRD / Factur-X PDF - the file tells which
 $invoice = Invoice::fromXml($xml);                // from a string (a PDF given here is read as a PDF)
 $invoice = Invoice::fromPdf($pdf);                // from the content of a ZUGFeRD / Factur-X PDF
+$xml = Invoice::xmlFromPdf($pdf);                 // the XML such a PDF carries, byte for byte as embedded
 
 $invoice->number;                                 // BT-1: "R-2026-0001" - MODEL.md names every property
 $invoice->issueDate;                              // "2026-09-26"
@@ -105,6 +106,7 @@ $summary->toArray();                              // nested arrays, e.g. for JSO
   note a property of its own (UBL writes "#AAI#text").
 - **From a PDF:** a ZUGFeRD / Factur-X PDF carries the invoice as an embedded XML file - `factur-x.xml`,
   `zugferd-invoice.xml` or `xrechnung.xml`. That file is the invoice and is read; the pages show it to a person.
+  `Invoice::xmlFromPdf()` gives the file itself, byte for byte as the sender embedded it - the original to store.
 - **Reading does not validate:** an invoice is read as far as its elements can be mapped; missing mandatory fields do
   not stop the reading - check it with `Validator` where that matters.
 
@@ -449,7 +451,7 @@ CodeLists::property(CodeList::DocumentType, '381', 'interpretation');   // "Cred
 
 ### Errors
 
-Reading - `Invoice::fromFile()`, `fromXml()` and `fromPdf()` - throws a subclass of
+Reading - `Invoice::fromFile()`, `fromXml()`, `fromPdf()` and `xmlFromPdf()` - throws a subclass of
 `Dealerweb\EInvoice\Exception\EInvoiceException`:
 
 - `InvalidXml` - the file cannot be read, or the document is empty, is not well-formed XML or nests its elements
