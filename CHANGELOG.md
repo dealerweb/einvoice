@@ -7,6 +7,14 @@ part of the public API and may change in any release.
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-10-01
+
+### Changed
+
+- A written ZUGFeRD / Factur-X PDF names this package with its version as creator and producer (document
+  information and XMP, e.g. "DealerWeb E-Invoice 1.1.1"), also where the given PDF names another program - the
+  package writes the final file. The rendered reading PDF names it as creator, too.
+
 ## [1.1.0] - 2026-09-27
 
 ### Added
@@ -76,6 +84,7 @@ First public release.
   ZUGFeRD / Factur-X MINIMUM to EXTENDED as XML and in your own PDF, EN 16931 in UBL, credit notes, Peppol BIS - and
   for reading, checking, converting, showing, attachments, names and errors, with example files of every format.
 
-[Unreleased]: https://github.com/dealerweb/einvoice/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/dealerweb/einvoice/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/dealerweb/einvoice/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/dealerweb/einvoice/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/dealerweb/einvoice/releases/tag/v1.0.0

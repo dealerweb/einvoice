@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dealerweb\EInvoice\Generation;
 
+use Composer\InstalledVersions;
 use DateTimeImmutable;
 use DateTimeZone;
 use Dealerweb\EInvoice\Exception\InvalidPdf;
@@ -80,7 +81,8 @@ final class HybridPdf
         'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     ];
 
-    private const TOOL = 'dealerweb/einvoice';
+    /** The name this package gives itself as creator and producer of a PDF. */
+    private const TOOL = 'DealerWeb E-Invoice';
 
     /**
      * @param string $title the title of the document if the PDF names none
@@ -682,9 +684,27 @@ final class HybridPdf
     }
 
     /**
+     * The name and version of this package as creator and producer of a PDF, e.g. "DealerWeb E-Invoice 1.1.0" - the
+     * version Composer installed, without it where Composer does not know the package.
+     */
+    public static function tool(): string
+    {
+        static $tool = null;
+        if ($tool === null) {
+            $version = null;
+            if (class_exists(InstalledVersions::class) && InstalledVersions::isInstalled('dealerweb/einvoice')) {
+                $version = InstalledVersions::getPrettyVersion('dealerweb/einvoice');
+            }
+            $tool = self::TOOL . (is_string($version) && $version !== '' ? ' ' . ltrim($version, 'vV') : '');
+        }
+
+        return $tool;
+    }
+
+    /**
      * The document information in UTF-8, from the information dictionary of the PDF: title (the one given where the
-     * PDF has none), author, subject, keywords, creator and producer (this package where the PDF names none), the
-     * creation date and now as date of the change. What XML does not allow is left out - control characters,
+     * PDF has none), author, subject, keywords, the creation date and now as date of the change. Creator and producer
+     * are always this package - it writes the final file, whatever made the PDF before. What XML does not allow is left out - control characters,
      * noncharacters -, line breaks are line feeds (as XML reads them) and a text keeps at most 8,000 characters.
      *
      * @return array{title: string, author: string, subject: string, keywords: string, creator: string, producer: string, created: DateTimeImmutable, modified: DateTimeImmutable}
@@ -704,8 +724,8 @@ final class HybridPdf
             'author' => $text('Author'),
             'subject' => $text('Subject'),
             'keywords' => $text('Keywords'),
-            'creator' => $text('Creator') !== '' ? $text('Creator') : self::TOOL,
-            'producer' => $text('Producer') !== '' ? $text('Producer') : self::TOOL,
+            'creator' => self::tool(),
+            'producer' => self::tool(),
             'created' => ($created instanceof Text ? self::parseDate($created->bytes) : null) ?? $now,
             'modified' => $now,
         ];

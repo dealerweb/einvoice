@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dealerweb\EInvoice\Render;
 
 use Dealerweb\EInvoice\Document;
+use Dealerweb\EInvoice\Generation\HybridPdf;
 use Dealerweb\EInvoice\Invoice;
 use Dealerweb\EInvoice\Labels;
 use Dompdf\Canvas;
@@ -65,7 +66,7 @@ final class PdfRenderer
         $dompdf->loadHtml(str_replace("\u{FEFF}", '', Template::render($view, new Texts($this->language), true)), 'UTF-8');
         $dompdf->render();
         $dompdf->addInfo('Title', str_replace("\u{FEFF}", '', $view['documentTitle']));
-        $dompdf->addInfo('Creator', 'dealerweb/einvoice');
+        $dompdf->addInfo('Creator', HybridPdf::tool());
 
         $this->pageLine($dompdf->getCanvas(), $view['page'], str_replace("\u{FEFF}", '', $view['pageTitle']), $view['footer']['page']);
 
