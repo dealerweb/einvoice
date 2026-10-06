@@ -17,7 +17,9 @@ Pure PHP (8.2+), no Java, no XSLT processor.
 
 Only the XML is the original invoice - anything rendered from it is a reading aid.
 
-**Try it online:** [www.dealerweb.de/einvoice](https://www.dealerweb.de/einvoice) checks an XRechnung,
+## Online demo
+
+[www.dealerweb.de/einvoice](https://www.dealerweb.de/einvoice) checks an XRechnung,
 ZUGFeRD / Factur-X or Peppol BIS invoice - XML or ZUGFeRD PDF - with this library and shows it as a readable page.
 The file is only checked, not stored.
 
