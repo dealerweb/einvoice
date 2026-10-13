@@ -189,4 +189,13 @@ return [
             'rules' => ['facturx-extended'],
         ],
     ],
+    'france' => [
+        'version' => '1.4.0.04',
+        'ubl' => 'france-ubl',
+        'cii' => 'france-cii',
+        'extended' => [
+            'ubl' => 'extended-ctc-fr-ubl',
+            'cii' => 'extended-ctc-fr-cii',
+        ],
+    ],
 ];

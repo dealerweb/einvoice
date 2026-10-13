@@ -123,7 +123,9 @@ trait InvoiceBehavior
     /**
      * The invoice as XML of a profile: ZUGFeRD / Factur-X (MINIMUM to EXTENDED), XRechnung, EN 16931 or Peppol BIS
      * Billing 3.0 - completed (calculate(), with a copy) and checked by the validator: an invoice that does not meet
-     * its profile is not returned. For more options (the fields by their ids, no validation) see Generator.
+     * its profile is not returned; ZUGFeRD / Factur-X EN 16931 has to pass as well the scenario EN16931 (CII) of the
+     * KoSIT validator, with which a recipient may check its XML. For more options (the fields by their ids, no
+     * validation) see Generator.
      *
      * @param Syntax|null $syntax CII or UBL (Syntax::UblInvoice - a credit note is written as UBL CreditNote by its
      *                            type) where the profile has both; by default CII for ZUGFeRD / Factur-X and

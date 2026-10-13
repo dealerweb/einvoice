@@ -15,12 +15,19 @@ use LogicException;
 /**
  * What a document is checked against: the XML schema, the rule sets and the levels of their messages - one of the
  * scenarios of the KoSIT configuration, one of Peppol BIS Billing 3.0 or a ZUGFeRD / Factur-X profile
- * (resources/compiled/validation/scenarios.php).
+ * (resources/compiled/validation/scenarios.php), for an invoice of the French e-invoicing reform with the French rules
+ * BR-FR added.
  *
  * @internal
  */
 final readonly class Scenario
 {
+    private const RSM = 'urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100';
+
+    private const RAM = 'urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100';
+
+    private const CBC = 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2';
+
     /**
      * @param string $schema path of the XML schema, relative to the package
      * @param list<string> $ruleSets the rule sets, in the order they are applied
@@ -44,17 +51,39 @@ final readonly class Scenario
      * EN 16931, which has that identifier: Factur-X is the PDF with its XML (BR-HYBRID-01 of the specification), an
      * XML of its own that names EN 16931 is an invoice of EN 16931. Other identifiers based on EN 16931 get EN 16931
      * itself, with a note - not one with whitespace around it: the scenarios do not match it, and an identifier of
-     * XRechnung or Peppol it hides is not checked as EN 16931 alone.
+     * XRechnung or Peppol it hides is not checked as EN 16931 alone. An invoice of the French e-invoicing reform - it
+     * names the profile EXTENDED-CTC-FR or gives its processing in a note with the subject code BAR (BR-FR-20) - gets
+     * the French rules BR-FR of FNFE-MPE as well, after those of its scenario, as the French validation applies them;
+     * the profile EXTENDED-CTC-FR itself is checked with the rules of FNFE-MPE for it, in place of those of EN 16931 or
+     * Factur-X EXTENDED.
      *
      * @param string $identifier the specification identifier as the document writes it, whitespace included
      * @param bool $hybrid the XML comes from a ZUGFeRD / Factur-X PDF
+     * @param bool $frenchRules the French rules BR-FR apply whatever the document declares (Validator's option)
      *
      * @return self|string the scenario, or why there is none
      */
-    public static function select(DOMDocument $document, Syntax $syntax, Specification $specification, ?Profile $profile, string $identifier, bool $hybrid): self|string
+    public static function select(DOMDocument $document, Syntax $syntax, Specification $specification, ?Profile $profile, string $identifier, bool $hybrid, bool $frenchRules): self|string
+    {
+        $french = $frenchRules || self::isFrench($document, $syntax, $specification);
+        $scenario = self::base($document, $syntax, $specification, $profile, $identifier, $hybrid, $french);
+
+        return $scenario instanceof self && $french ? $scenario->withFrance($syntax) : $scenario;
+    }
+
+    /**
+     * The scenario of select() without the French rules - its note on another specification names them if they follow.
+     *
+     * @return self|string
+     */
+    private static function base(DOMDocument $document, Syntax $syntax, Specification $specification, ?Profile $profile, string $identifier, bool $hybrid, bool $french): self|string
     {
         if ($profile !== null) {
             return self::forProfile($document, $syntax, $specification, $profile);
+        }
+        // in CII whatever surrounds the identifier, as FeRD's rules, in UBL only without whitespace, as KoSIT compares
+        if ($specification->profile === 'EXTENDED-CTC-FR' && ($syntax === Syntax::Cii || $identifier === $specification->identifier)) {
+            return self::extendedCtcFr($syntax);
         }
 
         foreach (self::listed() as $scenario) {
@@ -70,18 +99,14 @@ final readonly class Scenario
         if ($syntax === Syntax::Cii) {
             $ferd = self::ferdProfile($specification, $hybrid);
             if ($ferd !== null) {
-                $scenario = self::ferd($ferd);
-
-                return $specification->profile === 'EXTENDED-CTC-FR'
-                    ? new self($scenario->name, $scenario->profile, $scenario->schema, $scenario->ruleSets, $scenario->levels, [self::partly($specification, 'ZUGFeRD / Factur-X EXTENDED')])
-                    : $scenario;
+                return self::ferd($ferd);
             }
         }
 
         if ($identifier === $specification->identifier && str_starts_with($identifier, Specification::EN16931)) {
             $scenario = self::core($syntax);
 
-            return new self($scenario->name, $scenario->profile, $scenario->schema, $scenario->ruleSets, $scenario->levels, [self::partly($specification, 'EN 16931')]);
+            return new self($scenario->name, $scenario->profile, $scenario->schema, $scenario->ruleSets, $scenario->levels, [self::partly($specification, 'EN 16931', $french)]);
         }
 
         if ($specification->identifier === '') {
@@ -160,7 +185,7 @@ final readonly class Scenario
             return null;
         }
 
-        return $specification->profile === 'EXTENDED-CTC-FR' ? Profile::Extended : Profile::tryFrom((string) $specification->profile);
+        return Profile::tryFrom((string) $specification->profile);
     }
 
     private static function ferd(Profile $profile): self
@@ -171,6 +196,82 @@ final readonly class Scenario
     }
 
     /**
+     * The profile EXTENDED-CTC-FR of the French e-invoicing reform: the XML schema of UBL 2.1, in CII that of ZUGFeRD /
+     * Factur-X EXTENDED (FNFE-MPE names it for CII, EXTENDED-CTC-FR being a subset of it), and the rules of FNFE-MPE
+     * for the profile in place of those of EN 16931 or Factur-X EXTENDED.
+     */
+    private static function extendedCtcFr(Syntax $syntax): self
+    {
+        $base = $syntax === Syntax::Cii ? self::ferd(Profile::Extended) : self::core($syntax);
+        $label = match ($syntax) {
+            Syntax::UblInvoice => 'UBL Invoice',
+            Syntax::UblCreditNote => 'UBL CreditNote',
+            Syntax::Cii => 'CII',
+        };
+
+        return new self("EXTENDED-CTC-FR ($label)", $base->profile, $base->schema, [self::table()['france']['extended'][$syntax === Syntax::Cii ? 'cii' : 'ubl']]);
+    }
+
+    /**
+     * This scenario with the French rules BR-FR of the syntax after its own rules - the third step of the French
+     * validation, after the schema and the rules of the profile (FNFE-MPE).
+     */
+    private function withFrance(Syntax $syntax): self
+    {
+        $france = self::table()['france'];
+
+        return new self("{$this->name} + French rules BR-FR (FNFE-MPE {$france['version']})", $this->profile, $this->schema, [...$this->ruleSets, $france[$syntax === Syntax::Cii ? 'cii' : 'ubl']], $this->levels, $this->notes);
+    }
+
+    /**
+     * Whether the document is an invoice of the French e-invoicing reform: it names the profile EXTENDED-CTC-FR (BT-24)
+     * or gives its processing in a note with the subject code BAR (BT-21, BR-FR-20). The note is found as the rules BR-FR
+     * find it: in CII a note of the document with that subject code, in UBL "#BAR#" in the notes of the invoice joined
+     * by "#".
+     */
+    private static function isFrench(DOMDocument $document, Syntax $syntax, Specification $specification): bool
+    {
+        $root = $document->documentElement;
+        if ($specification->profile === 'EXTENDED-CTC-FR') {
+            return true;
+        }
+        if ($root === null) {
+            return false;
+        }
+        if ($syntax !== Syntax::Cii) {
+            $notes = array_map(static fn(DOMElement $note): string => $note->textContent, self::children($root, self::CBC, 'Note'));
+
+            return str_contains(implode('#', $notes), '#BAR#');
+        }
+        foreach (self::children($root, self::RSM, 'ExchangedDocument') as $exchanged) {
+            foreach (self::children($exchanged, self::RAM, 'IncludedNote') as $note) {
+                foreach (self::children($note, self::RAM, 'SubjectCode') as $code) {
+                    if ($code->textContent === 'BAR') {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return list<DOMElement>
+     */
+    private static function children(DOMElement $element, string $namespace, string $name): array
+    {
+        $children = [];
+        foreach ($element->childNodes as $child) {
+            if ($child instanceof DOMElement && $child->namespaceURI === $namespace && $child->localName === $name) {
+                $children[] = $child;
+            }
+        }
+
+        return $children;
+    }
+
+    /**
      * @param array<string, mixed> $scenario
      */
     private static function fromTable(array $scenario): self
@@ -178,8 +279,10 @@ final readonly class Scenario
         return new self($scenario['name'], Profile::from($scenario['profile']), $scenario['schema'], $scenario['rules'], $scenario['levels']);
     }
 
-    private static function partly(Specification $specification, string $checked): string
+    private static function partly(Specification $specification, string $checked, bool $french): string
     {
+        $checked .= $french ? ' and the French rules BR-FR' : '';
+
         return "The document follows {$specification->name()} - checked against $checked, the additional rules of that specification are not included.";
     }
 
@@ -240,7 +343,7 @@ final readonly class Scenario
     }
 
     /**
-     * @return array{kosit: list<array<string, mixed>>, peppol: list<array<string, mixed>>, ferd: array<string, array{version: string, schema: string, rules: list<string>}>}
+     * @return array{kosit: list<array<string, mixed>>, peppol: list<array<string, mixed>>, ferd: array<string, array{version: string, schema: string, rules: list<string>}>, france: array{version: string, ubl: string, cii: string, extended: array{ubl: string, cii: string}}}
      */
     private static function table(): array
     {

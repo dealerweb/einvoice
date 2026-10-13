@@ -58,6 +58,20 @@ the specification requires the approval of AWV e.V. The word and figurative mark
 Release and files: resources/ferd/SOURCE.md.
 
 
+France CTC rules (BR-FR) - FNFE-MPE
+===================================
+
+Forum National de la Facture Électronique et des Marchés Publics Électroniques (FNFE-MPE), Apache
+License 2.0 (see resources/france/LICENSE); the header of the Schematron files names the European
+Union Public Licence (EUPL), quoted in resources/france/SOURCE.md.
+
+resources/compiled/validation/france-ubl.php and france-cii.php are compiled from the Schematron
+rules of the French e-invoicing reform (standard AFNOR XP Z12-012) in the repository
+https://github.com/fnfempe/France_RFE, release v1.4.0.04.
+
+Release and files: resources/france/SOURCE.md.
+
+
 Validation - KoSIT, CEN, OASIS and UN/CEFACT
 ============================================
 

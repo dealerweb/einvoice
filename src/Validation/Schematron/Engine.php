@@ -19,8 +19,9 @@ use DOMProcessingInstruction;
  * Runs a compiled Schematron rule set (resources/compiled/validation) on a document and returns what the official
  * stylesheet reports: the failed asserts and successful reports, in its order.
  *
- * The document is walked like the stylesheet walks it - the document node, each element, its attributes, its
- * children (SchXslt visits text nodes, too). At each node the rules are tried in Saxon's order (highest priority
+ * The document is walked like the stylesheet walks it - the document node, each element, its attributes (unless the
+ * stylesheet walks element children alone, as newer versions of the skeleton do with select="*"), its children
+ * (SchXslt visits text nodes, too). At each node the rules are tried in Saxon's order (highest priority
  * first); a rule whose pattern cannot be evaluated for the node does not match it (XSLT's rule for errors in
  * patterns). The first matching rule of each Schematron pattern fires: its variables, conditions and findings run as
  * compiled from Saxon's plan. SchXslt keeps all patterns in one mode, so a node passes the rules of all patterns
@@ -32,7 +33,7 @@ use DOMProcessingInstruction;
  *
  * @phpstan-type Check array{0: string, 1: string|null, 2: string|null, 3: string|null, 4: string, 5: list<list<mixed>>}
  * @phpstan-type Rule array{mode: int, pattern: int, priority: float|int, match: list<mixed>, keys: list<string>, action: list<mixed>, checks: list<Check>}
- * @phpstan-type RuleSet array{source: string, sha1: string, saxon: string, compiler: string, title: string, documents: array<string, string>, globals: array<string, list<mixed>>, functions: array<string, list<mixed>>, patterns: list<array{id: string|null, name: string|null}>, modes: list<array{node: bool}>, rules: list<Rule>}
+ * @phpstan-type RuleSet array{source: string, sha1: string, saxon: string, compiler: string, title: string, documents: array<string, string>, globals: array<string, list<mixed>>, functions: array<string, list<mixed>>, patterns: list<array{id: string|null, name: string|null}>, modes: list<array{node: bool, attributes?: bool}>, rules: list<Rule>}
  */
 final class Engine
 {
@@ -122,7 +123,7 @@ final class Engine
         try {
             foreach ($this->rules as $mode => $rules) {
                 if (! isset($this->direct[$mode])) {
-                    $this->walk($document, $evaluator, $mode, $rules, ! $skeleton, $skeleton, $buckets);
+                    $this->walk($document, $evaluator, $mode, $rules, ! $skeleton, $skeleton, $this->ruleSet['modes'][$mode]['attributes'] ?? true, $buckets);
 
                     continue;
                 }
@@ -163,12 +164,13 @@ final class Engine
 
     /**
      * @param list<Rule> $rules
+     * @param bool $attributes whether the walk visits the attributes of each element (the traversal of the mode)
      * @param array<int, list<Finding>> $buckets findings per pattern
      */
-    private function walk(DOMNode $node, Evaluator $evaluator, int $mode, array $rules, bool $texts, bool $skeleton, array &$buckets): void
+    private function walk(DOMNode $node, Evaluator $evaluator, int $mode, array $rules, bool $texts, bool $skeleton, bool $attributes, array &$buckets): void
     {
         $this->visit($node, $evaluator, $mode, $rules, $skeleton, $buckets);
-        if ($node instanceof DOMElement) {
+        if ($attributes && $node instanceof DOMElement) {
             foreach ($node->attributes ?? [] as $attribute) {
                 $this->visit($attribute, $evaluator, $mode, $rules, $skeleton, $buckets);
             }
@@ -176,7 +178,7 @@ final class Engine
         if ($node instanceof DOMElement || $node instanceof DOMDocument) {
             foreach ($node->childNodes as $child) {
                 if ($child instanceof DOMElement) {
-                    $this->walk($child, $evaluator, $mode, $rules, $texts, $skeleton, $buckets);
+                    $this->walk($child, $evaluator, $mode, $rules, $texts, $skeleton, $attributes, $buckets);
                 } elseif ($texts && in_array($child->nodeType, [XML_TEXT_NODE, XML_CDATA_SECTION_NODE, XML_COMMENT_NODE, XML_PI_NODE], true)) {
                     $this->visit($child, $evaluator, $mode, $rules, $skeleton, $buckets);
                 }

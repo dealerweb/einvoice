@@ -225,7 +225,9 @@ $invoice = Invoice::fromArray([                    // the same as array, with th
   copy - the invoice stays as built). Given values stay, the validator checks them. Decimals are exact, amounts
   rounded to two decimals half away from zero.
 - **Checked:** the invoice written is checked by the validator in its profile - one that does not meet it is not
-  returned (`InvalidInvoice`, see Errors). Before that, an unknown property, a value of the wrong kind (a number that
+  returned (`InvalidInvoice`, see Errors). ZUGFeRD / Factur-X EN 16931 has to pass as well the scenario EN16931 (CII)
+  of the KoSIT validator - the CII schema D16B and the rules of CEN -, with which a recipient may check its XML on its
+  own; the report of a refusal there says so. Before that, an unknown property, a value of the wrong kind (a number that
   is no decimal, an item of a list that is no object of its class - also in a list filled by assignment), a field
   outside the profile, more items than the profile allows, a field the syntax has no place for (the sub lines of the
   XRechnung extension in CII, the extensions of ZUGFeRD / Factur-X in UBL) stop it with the path of the value
@@ -272,8 +274,9 @@ is the same model, and a valid one stays valid. Every CII example of EN 16931 co
 example written as CII, gives the semantic model of KoSIT of the original, and a valid one stays valid in the other
 syntax - except what the other syntax has no place for, which stops the generator with a message: in UBL a department
 next to the person of a contact, a second buyer identifier, the VAT exemption reason of a line; in CII the sub lines
-of the XRechnung extension, the type of a third party payment, a second preceding invoice in XRechnung. A small
-invoice takes about 1 ms, 20 ms with the validator.
+of the XRechnung extension, the type of a third party payment, a second preceding invoice in XRechnung and in
+EN 16931 (the CII schema D16B, with which the KoSIT validator checks both, holds one). A small invoice takes about
+1 ms, 20 ms with the validator; the second check of ZUGFeRD / Factur-X EN 16931 adds about half of that.
 
 **The ZUGFeRD / Factur-X PDF** (`toPdf()`) is the PDF of the invoice with its XML embedded, a PDF/A-3. The PDF is
 yours - the invoice as your system prints it, given with `pdf:` -, or, where you have none, the invoice rendered by
@@ -357,6 +360,7 @@ use Dealerweb\EInvoice\Validation\Validator;
 $report = (new Validator())->validateFile('invoice.xml');   // or a ZUGFeRD / Factur-X PDF - the file tells which
 $report = (new Validator())->validate($xml);                // XML - or the content of a PDF - as string
 $report = (new Validator())->validate($xml, Profile::Core); // against a given profile instead of the one named in BT-24
+$report = (new Validator(frenchRules: true))->validate($xml); // with the French rules BR-FR for every invoice (below)
 
 $report->isValid();        // meets its profile: no message is an error (the KoSIT validator's "accept")
 $report->isEInvoice();     // valid and an invoice in the sense of EN 16931 - ZUGFeRD MINIMUM and BASIC WL are not
@@ -389,6 +393,7 @@ The rules come from the specification identifier (BT-24):
 | ZUGFeRD / Factur-X EN 16931: EN 16931 (`urn:cen.eu:en16931:2017`) in the XML of a ZUGFeRD / Factur-X PDF | `En16931` | FeRD schema EN16931 | FeRD rules EN16931 |
 | EN 16931 as XML of its own, UBL or CII | `Core` | UBL 2.1 / CII D16B | EN 16931 (CEN) |
 | Peppol BIS Billing 3.0 (UBL or CII) | `Peppol` | UBL 2.1 / CII D16B | EN 16931 (CEN) and Peppol BIS Billing 3.0 - the package's own implementation of the rules of OpenPeppol (see below) |
+| Factur-X EXTENDED-CTC-FR of the French e-invoicing reform (UBL or CII) | `Core` / `Extended` | UBL 2.1 / FeRD schema EXTENDED | the rules of FNFE-MPE for the profile and the French rules BR-FR (see below) |
 | another specification based on EN 16931 (Peppol BIS Self-Billing, another CIUS, XRechnung 2.x) | `Core` | UBL 2.1 / CII D16B | EN 16931 (CEN) - the report notes that the own rules of the specification are not included |
 | anything else | - | - | none: rejected (`NO_SCENARIO`), as by the KoSIT validator |
 
@@ -396,6 +401,15 @@ Factur-X is the PDF with its XML (BR-HYBRID-01 of the Factur-X specification). A
 identifier of EN 16931 is therefore an invoice of EN 16931, checked like the KoSIT validator's scenario
 "EN16931 (CII)"; the narrower rules of ZUGFeRD / Factur-X EN 16931 - the same identifier, but for example without the
 VAT category B (split payment) - apply to the XML of a ZUGFeRD / Factur-X PDF, or with `Profile::En16931`.
+
+The French e-invoicing reform (standard AFNOR XP Z12-012) has rules of its own, published by FNFE-MPE (release
+1.4.0.04): the French rules BR-FR, checked after those of the profile - an invoice number of at most 35 characters,
+the notes PMT, PMD and AAB, the SIREN of the seller and more -, and for the profile EXTENDED-CTC-FR rules that take
+the place of those of EN 16931 or Factur-X EXTENDED. An invoice that declares the reform - the profile EXTENDED-CTC-FR,
+or a note with the subject code BAR (in UBL `#BAR#` in its notes) - is checked with them, the scenario says so (e.g.
+"EN16931 (UBL Invoice) + French rules BR-FR (FNFE-MPE 1.4.0.04)"). An invoice without such a note does not show
+whether it falls under the reform - the standard itself says there is no simple rule -, so
+`new Validator(frenchRules: true)` applies the French rules to every invoice, as a platform of the reform does.
 
 A given profile decides instead - `Profile::Core` checks a CII document like the KoSIT validator's scenario
 "EN16931 (CII)", `Profile::XRechnung` and `Profile::Peppol` a document with another identifier with the rules of
@@ -405,12 +419,16 @@ applied; a rule set that cannot be applied to the document gives a `PROCESSING_E
 validator.
 
 The verdicts are those of the official tools: the rules are the official Schematron stylesheets (EN 16931 1.3.16 of
-CEN and XRechnung 3.0.2 of the KoSIT validator configuration of 2026-08-31, ZUGFeRD 2.5.2 / Factur-X 1.09.2 of FeRD),
+CEN and XRechnung 3.0.2 of the KoSIT validator configuration of 2026-08-31, ZUGFeRD 2.5.2 / Factur-X 1.09.2 of FeRD,
+the French rules 1.4.0.04 of FNFE-MPE),
 compiled from Saxon's execution plan and executed with Saxon's rules of evaluation, down to its errors and its
 comparisons of `-0` and `NaN`; libxml checks the schemas, with the verdict of Xerces where libxml is stricter
-(decimals of more than 24 digits, dates and times with whitespace around them). This is proven for 2,802 documents
+(decimals of more than 24 digits, dates and times with whitespace around them). This is proven for 2,855 documents
 (the official samples, the unit tests of CEN and variants made to fire every rule): every finding equals Saxon's,
-every schema verdict Xerces', every report the KoSIT validator's. Two things depend on the server, as
+every schema verdict Xerces', every report the KoSIT validator's. Saxon evaluates a variable eagerly once it has
+needed its value twenty times - in earlier documents or earlier in the same one - and may then stop at an error in a
+value the rule does not need; the validator evaluates it only when it is needed, as Saxon does at first, and gives the
+findings. Two things depend on the server, as
 they do with the official tools: a date without timezone is compared in the implicit timezone - Saxon takes the one of
 the JVM, the validator the one of PHP (`date.timezone`) -, and where the regular expression library gives up on a text
 (hundreds of thousands of characters), the rule set is reported as not applied (`PROCESSING_ERROR`) instead of
@@ -498,7 +516,7 @@ installation problem, not an error of the invoice.
 - **No check of the PDF itself:** of a ZUGFeRD / Factur-X PDF the validator checks the XML it carries, not the PDF
   (PDF/A-3, the embedding) - that is the job of a PDF validator such as veraPDF.
 - **No own rules of other specifications:** other CIUS of EN 16931 (Peppol BIS Self-Billing, national ones) are
-  checked against EN 16931 itself (see the table above).
+  checked against EN 16931 itself (see the table above) - the French rules of the e-invoicing reform are included.
 
 ## How it works
 
@@ -515,7 +533,8 @@ installation problem, not an error of the invoice.
   document declares, so a DOCTYPE behind UTF-16 or UTF-7 is found as well -, elements nest at most 257 levels deep,
   files are read from the file system only.
 - **Validation:** the official Schematron stylesheets - EN 16931 of CEN, XRechnung of KoSIT, ZUGFeRD / Factur-X of
-  FeRD - run compiled to PHP with the rules of evaluation of Saxon; libxml checks the schemas, the scenarios (which
+  FeRD, the French rules of FNFE-MPE - run compiled to PHP with the rules of evaluation of Saxon; libxml checks the
+  schemas, the scenarios (which
   schema and rules apply to which document, message levels) are those of the KoSIT validator. Where an official rule is
   wrong, the validator is wrong with it: it gives the verdict of the official tools. The rules of Peppol BIS Billing
   3.0 are an own implementation with the verdicts of the official ones.

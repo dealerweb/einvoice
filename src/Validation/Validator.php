@@ -28,7 +28,9 @@ use RuntimeException;
  *  1. The XML: well-formed, no DOCTYPE, a UBL Invoice, UBL CreditNote or CII document.
  *  2. The profile: as given, or from the specification identifier (BT-24) - see Scenario::select().
  *  3. The XML schema of the profile. If it finds errors, the rules are not applied (as in KoSIT's validator).
- *  4. The rule sets (Schematron) of the profile. The level of a finding comes from its flag or role as in KoSIT's
+ *  4. The rule sets (Schematron) of the profile - for an invoice of the French e-invoicing reform followed by the
+ *     French rules BR-FR of FNFE-MPE (see Scenario::select() and the option frenchRules). The level of a finding comes
+ *     from its flag or role as in KoSIT's
  *     report ("fatal"/"error" error, "warning"/"warn" warning, "information"/"info" information, else error), the
  *     custom levels of the KoSIT scenario override it.
  *
@@ -38,6 +40,13 @@ final class Validator
 {
     /** @var array<string, Engine> compiled rule sets, loaded once per process */
     private static array $engines = [];
+
+    /**
+     * @param bool $frenchRules check every invoice with the French rules BR-FR as well, as a platform of the French
+     *                          e-invoicing reform does - without it only an invoice that declares the reform (profile
+     *                          EXTENDED-CTC-FR, a note with the subject code BAR) gets them
+     */
+    public function __construct(private readonly bool $frenchRules = false) {}
 
     /**
      * Validates an invoice: its XML - or a ZUGFeRD / Factur-X PDF, whose XML is checked (see validatePdf()).
@@ -105,7 +114,7 @@ final class Validator
 
         $identifier = self::identifier($document, $syntax);
         $specification = Specification::parse($identifier);
-        $scenario = Scenario::select($document, $syntax, $specification, $profile, $identifier, $hybrid);
+        $scenario = Scenario::select($document, $syntax, $specification, $profile, $identifier, $hybrid, $this->frenchRules);
         if (is_string($scenario)) {
             return new Report(null, null, $syntax, $specification, null, [], [
                 new Message(Severity::Error, Message::SOURCE_DOCUMENT, Message::NO_SCENARIO, $scenario),

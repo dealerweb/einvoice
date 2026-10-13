@@ -32,7 +32,8 @@ use InvalidArgumentException;
  * business terms and groups of EN 16931 and the extensions of Factur-X, nested in their groups or not (Fields). The
  * document is written in the order of the schema, with what the specification fixes (ChargeIndicator, schemeID,
  * TypeCode, the format of dates, BT-24) and checked by the validator - an invoice that does not meet its profile is not
- * returned (InvalidInvoice).
+ * returned (InvalidInvoice). ZUGFeRD / Factur-X EN 16931 has to meet as well what the KoSIT validator checks its XML
+ * with (check()).
  */
 final class Generator
 {
@@ -59,6 +60,9 @@ final class Generator
 
     /** The business process (BT-23) of Peppol BIS Billing 3.0 unless the invoice gives one: billing, profile 01. */
     private const PEPPOL_PROCESS = 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0';
+
+    /** Why an invoice of ZUGFeRD / Factur-X EN 16931 that meets the rules of FeRD is refused all the same (check()). */
+    private const AS_RECIPIENTS_CHECK = 'The XML of ZUGFeRD / Factur-X EN 16931 names EN 16931 alone: a recipient who checks it on its own does so with the scenario EN16931 (CII) of the KoSIT validator - the CII schema D16B and the rules of CEN -, which this invoice does not meet.';
 
     /** The profile the invoice is written and checked in. */
     private readonly Profile $profile;
@@ -199,10 +203,7 @@ final class Generator
             $xml = $this->xml($xml);
         }
         if ($this->validate && $xml !== $this->checked) {
-            $report = (new Validator())->validate($xml, $this->profile);
-            if (! $report->isValid()) {
-                throw new InvalidInvoice($report);
-            }
+            $this->check($xml);
         }
 
         $document = Document::fromXml($xml);
@@ -282,14 +283,34 @@ final class Generator
         $xml = (string) $document->saveXML();
 
         if ($this->validate) {
-            $report = (new Validator())->validate($xml, $this->profile);
-            if (! $report->isValid()) {
-                throw new InvalidInvoice($report);
-            }
-            $this->checked = $xml;
+            $this->check($xml);
         }
 
         return $xml;
+    }
+
+    /**
+     * Checks the XML in the profile. ZUGFeRD / Factur-X EN 16931 is checked a second time, with the scenario EN16931
+     * (CII) of the KoSIT validator: its XML names EN 16931 alone, and a recipient who checks the XML on its own gets
+     * that scenario - the CII schema D16B and the rules of CEN as KoSIT ships them, which may refuse what the rules of
+     * FeRD accept.
+     *
+     * @throws InvalidInvoice the validator rejects the XML (report())
+     */
+    private function check(string $xml): void
+    {
+        $validator = new Validator();
+        $report = $validator->validate($xml, $this->profile);
+        if (! $report->isValid()) {
+            throw new InvalidInvoice($report);
+        }
+        if ($this->profile === Profile::En16931) {
+            $report = $validator->validate($xml, Profile::Core);
+            if (! $report->isValid()) {
+                throw new InvalidInvoice($report->withNote(self::AS_RECIPIENTS_CHECK));
+            }
+        }
+        $this->checked = $xml;
     }
 
     /**

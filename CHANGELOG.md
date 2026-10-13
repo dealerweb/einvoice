@@ -7,6 +7,28 @@ part of the public API and may change in any release.
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-10-13
+
+### Added
+
+- The rules of the French e-invoicing reform (standard AFNOR XP Z12-012), published by FNFE-MPE (release 1.4.0.04):
+  the French rules BR-FR for UBL and CII, checked after the rules of the profile for an invoice that declares the
+  reform - a note with the subject code BAR, the profile EXTENDED-CTC-FR - and for every invoice with
+  `new Validator(frenchRules: true)`. The scenario names them ("EN16931 (UBL Invoice) + French rules BR-FR (FNFE-MPE
+  1.4.0.04)"), `Report::ruleSets()` lists `france-ubl` or `france-cii`. Proven against Saxon like the other rule sets;
+  the examples of FNFE-MPE pass.
+
+### Changed
+
+- An invoice of the profile EXTENDED-CTC-FR is checked with the rules of FNFE-MPE for that profile (scenario
+  "EXTENDED-CTC-FR (UBL Invoice)", "... (CII)") in place of those of EN 16931 or ZUGFeRD / Factur-X EXTENDED, which
+  rejected the examples of FNFE-MPE; the note that it was checked only in part is gone.
+- The generator writes ZUGFeRD / Factur-X EN 16931 only when it also passes the scenario EN16931 (CII) of the KoSIT
+  validator - the CII schema D16B and the rules of CEN -, with which a recipient may check the XML on its own;
+  otherwise `InvalidInvoice`, its report noting why. A second preceding invoice reference (BG-3) is therefore refused
+  in EN 16931 as in XRechnung (`precedingInvoices: at most 1 in the profile EN16931, 2 given.`): the schema of FeRD
+  holds any number, D16B one.
+
 ## [1.1.2] - 2026-10-13
 
 ### Fixed
@@ -95,7 +117,8 @@ First public release.
   ZUGFeRD / Factur-X MINIMUM to EXTENDED as XML and in your own PDF, EN 16931 in UBL, credit notes, Peppol BIS - and
   for reading, checking, converting, showing, attachments, names and errors, with example files of every format.
 
-[Unreleased]: https://github.com/dealerweb/einvoice/compare/v1.1.2...HEAD
+[Unreleased]: https://github.com/dealerweb/einvoice/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/dealerweb/einvoice/compare/v1.1.2...v1.2.0
 [1.1.2]: https://github.com/dealerweb/einvoice/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/dealerweb/einvoice/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/dealerweb/einvoice/compare/v1.0.0...v1.1.0
