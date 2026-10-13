@@ -46,7 +46,7 @@ final class Validator
      */
     public function validate(string $xml, ?Profile $profile = null): Report
     {
-        return HybridPdf::isPdf($xml) ? $this->validatePdf($xml, $profile) : $this->validateXml($xml, $profile);
+        return HybridPdf::isPdf($xml) ? $this->validatePdf($xml, $profile) : $this->validateXml($xml, $profile, false);
     }
 
     /**
@@ -62,9 +62,10 @@ final class Validator
 
     /**
      * Validates the invoice a ZUGFeRD / Factur-X PDF carries: the XML embedded in it (factur-x.xml, xrechnung.xml or
-     * zugferd-invoice.xml), as validate() checks XML. The PDF itself - PDF/A-3, the embedding - is the job of a PDF
-     * validator such as veraPDF; the report says so in its notes. A PDF that cannot be read (INVALID_PDF) or carries no
-     * invoice (NO_INVOICE) is reported, not thrown.
+     * zugferd-invoice.xml), as validate() checks XML - but with the plain EN 16931 identifier as the profile
+     * ZUGFeRD / Factur-X EN 16931, which it names in such a PDF (Scenario::select()). The PDF itself - PDF/A-3, the
+     * embedding - is the job of a PDF validator such as veraPDF; the report says so in its notes. A PDF that cannot be
+     * read (INVALID_PDF) or carries no invoice (NO_INVOICE) is reported, not thrown.
      *
      * @param Profile|null $profile the profile to check against; null: the one the XML names (BT-24)
      */
@@ -78,13 +79,15 @@ final class Validator
             return self::rejected(Message::NO_INVOICE, $e->getMessage());
         }
 
-        return $this->validateXml($xml, $profile)->withNote('The XML the PDF carries was checked, not the PDF itself (PDF/A-3, the embedding) - that is the job of a PDF validator such as veraPDF.');
+        return $this->validateXml($xml, $profile, true)->withNote('The XML the PDF carries was checked, not the PDF itself (PDF/A-3, the embedding) - that is the job of a PDF validator such as veraPDF.');
     }
 
     /**
      * The checks of the XML (see the class): the file of a PDF is XML here, whatever it holds.
+     *
+     * @param bool $hybrid the XML comes from a ZUGFeRD / Factur-X PDF
      */
-    private function validateXml(string $xml, ?Profile $profile): Report
+    private function validateXml(string $xml, ?Profile $profile, bool $hybrid): Report
     {
         try {
             $document = Xml::load($xml, LIBXML_NOCDATA);
@@ -102,7 +105,7 @@ final class Validator
 
         $identifier = self::identifier($document, $syntax);
         $specification = Specification::parse($identifier);
-        $scenario = Scenario::select($document, $syntax, $specification, $profile, $identifier);
+        $scenario = Scenario::select($document, $syntax, $specification, $profile, $identifier, $hybrid);
         if (is_string($scenario)) {
             return new Report(null, null, $syntax, $specification, null, [], [
                 new Message(Severity::Error, Message::SOURCE_DOCUMENT, Message::NO_SCENARIO, $scenario),

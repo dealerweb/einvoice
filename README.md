@@ -386,11 +386,16 @@ The rules come from the specification identifier (BT-24):
 |---|---|---|---|
 | XRechnung 3.0, its extension and CVD (UBL or CII) | `XRechnung` | UBL 2.1 / CII D16B | EN 16931 (CEN) and XRechnung (KoSIT), with the message levels of KoSIT's scenario |
 | ZUGFeRD 2.x / Factur-X MINIMUM, BASIC WL, BASIC, EXTENDED (CII) | `Minimum` ... `Extended` | FeRD schema of the profile | FeRD rules of the profile |
-| EN 16931 (`urn:cen.eu:en16931:2017`) in CII - ZUGFeRD / Factur-X EN 16931 | `En16931` | FeRD schema EN16931 | FeRD rules EN16931 |
-| EN 16931 in UBL | `Core` | UBL 2.1 | EN 16931 (CEN) |
+| ZUGFeRD / Factur-X EN 16931: EN 16931 (`urn:cen.eu:en16931:2017`) in the XML of a ZUGFeRD / Factur-X PDF | `En16931` | FeRD schema EN16931 | FeRD rules EN16931 |
+| EN 16931 as XML of its own, UBL or CII | `Core` | UBL 2.1 / CII D16B | EN 16931 (CEN) |
 | Peppol BIS Billing 3.0 (UBL or CII) | `Peppol` | UBL 2.1 / CII D16B | EN 16931 (CEN) and Peppol BIS Billing 3.0 - the package's own implementation of the rules of OpenPeppol (see below) |
 | another specification based on EN 16931 (Peppol BIS Self-Billing, another CIUS, XRechnung 2.x) | `Core` | UBL 2.1 / CII D16B | EN 16931 (CEN) - the report notes that the own rules of the specification are not included |
 | anything else | - | - | none: rejected (`NO_SCENARIO`), as by the KoSIT validator |
+
+Factur-X is the PDF with its XML (BR-HYBRID-01 of the Factur-X specification). An XML of its own with the plain
+identifier of EN 16931 is therefore an invoice of EN 16931, checked like the KoSIT validator's scenario
+"EN16931 (CII)"; the narrower rules of ZUGFeRD / Factur-X EN 16931 - the same identifier, but for example without the
+VAT category B (split payment) - apply to the XML of a ZUGFeRD / Factur-X PDF, or with `Profile::En16931`.
 
 A given profile decides instead - `Profile::Core` checks a CII document like the KoSIT validator's scenario
 "EN16931 (CII)", `Profile::XRechnung` and `Profile::Peppol` a document with another identifier with the rules of

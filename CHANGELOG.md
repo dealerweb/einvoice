@@ -7,6 +7,17 @@ part of the public API and may change in any release.
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-10-13
+
+### Fixed
+
+- A CII invoice as XML of its own with the plain EN 16931 identifier (`urn:cen.eu:en16931:2017`) is checked as
+  EN 16931, like the KoSIT validator's scenario "EN16931 (CII)": `Profile::Core`, the rules of CEN, the schema of
+  CII D16B. It was checked with the narrower rules of ZUGFeRD / Factur-X EN 16931, which rejected, for example, the
+  VAT category B (split payment) that EN 16931 allows. Factur-X is the PDF with its XML: the XML of a ZUGFeRD /
+  Factur-X PDF keeps the rules of FeRD, as does `Profile::En16931` given to the validator. With whitespace around the
+  identifier such an XML matches no scenario (`NO_SCENARIO`), as in UBL and in the KoSIT validator.
+
 ## [1.1.1] - 2026-10-01
 
 ### Changed
@@ -84,7 +95,8 @@ First public release.
   ZUGFeRD / Factur-X MINIMUM to EXTENDED as XML and in your own PDF, EN 16931 in UBL, credit notes, Peppol BIS - and
   for reading, checking, converting, showing, attachments, names and errors, with example files of every format.
 
-[Unreleased]: https://github.com/dealerweb/einvoice/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/dealerweb/einvoice/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/dealerweb/einvoice/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/dealerweb/einvoice/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/dealerweb/einvoice/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/dealerweb/einvoice/releases/tag/v1.0.0

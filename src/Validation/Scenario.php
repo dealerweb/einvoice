@@ -39,24 +39,27 @@ final readonly class Scenario
     /**
      * The scenario of a document: for a given profile the one of that profile, otherwise the one its specification
      * identifier (BT-24) names - XRechnung by KoSIT's scenarios and Peppol BIS Billing 3.0 by its own (both compare
-     * the identifier exactly), ZUGFeRD / Factur-X by the profile in the identifier, the plain EN 16931 identifier in
-     * CII as ZUGFeRD / Factur-X EN 16931 and in UBL as EN 16931 (KoSIT's scenario). Other identifiers based on
-     * EN 16931 get EN 16931 itself, with a note - not one with whitespace around it: the scenarios do not match it,
-     * and an identifier of XRechnung or Peppol it hides is not checked as EN 16931 alone.
+     * the identifier exactly), ZUGFeRD / Factur-X by the profile in the identifier, the plain EN 16931 identifier as
+     * EN 16931 (KoSIT's scenario) - but in the XML of a ZUGFeRD / Factur-X PDF as the profile ZUGFeRD / Factur-X
+     * EN 16931, which has that identifier: Factur-X is the PDF with its XML (BR-HYBRID-01 of the specification), an
+     * XML of its own that names EN 16931 is an invoice of EN 16931. Other identifiers based on EN 16931 get EN 16931
+     * itself, with a note - not one with whitespace around it: the scenarios do not match it, and an identifier of
+     * XRechnung or Peppol it hides is not checked as EN 16931 alone.
      *
      * @param string $identifier the specification identifier as the document writes it, whitespace included
+     * @param bool $hybrid the XML comes from a ZUGFeRD / Factur-X PDF
      *
      * @return self|string the scenario, or why there is none
      */
-    public static function select(DOMDocument $document, Syntax $syntax, Specification $specification, ?Profile $profile, string $identifier): self|string
+    public static function select(DOMDocument $document, Syntax $syntax, Specification $specification, ?Profile $profile, string $identifier, bool $hybrid): self|string
     {
         if ($profile !== null) {
             return self::forProfile($document, $syntax, $specification, $profile);
         }
 
         foreach (self::listed() as $scenario) {
-            // a CII document with the plain EN 16931 identifier is a ZUGFeRD / Factur-X EN 16931 invoice (FeRD's rules)
-            if ($scenario['profile'] === Profile::Core->value && $syntax === Syntax::Cii) {
+            // in a ZUGFeRD / Factur-X PDF the plain EN 16931 identifier is the profile EN 16931 (FeRD's rules)
+            if ($hybrid && $scenario['profile'] === Profile::Core->value && $syntax === Syntax::Cii) {
                 continue;
             }
             if (self::matches($document, $scenario)) {
@@ -65,7 +68,7 @@ final readonly class Scenario
         }
 
         if ($syntax === Syntax::Cii) {
-            $ferd = self::ferdProfile($specification);
+            $ferd = self::ferdProfile($specification, $hybrid);
             if ($ferd !== null) {
                 $scenario = self::ferd($ferd);
 
@@ -146,12 +149,12 @@ final readonly class Scenario
     }
 
     /**
-     * The ZUGFeRD / Factur-X profile named by the identifier, the plain EN 16931 identifier included.
+     * The ZUGFeRD / Factur-X profile named by the identifier - the plain EN 16931 identifier only in the XML of a PDF.
      */
-    private static function ferdProfile(Specification $specification): ?Profile
+    private static function ferdProfile(Specification $specification, bool $hybrid): ?Profile
     {
         if ($specification->standard === Standard::En16931) {
-            return Profile::En16931;
+            return $hybrid ? Profile::En16931 : null;
         }
         if ($specification->standard !== Standard::FacturX) {
             return null;
