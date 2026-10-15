@@ -1,5 +1,6 @@
 # dealerweb/einvoice
 
+[![CI](https://github.com/dealerweb/einvoice/actions/workflows/package.yml/badge.svg)](https://github.com/dealerweb/einvoice/actions/workflows/package.yml)
 [![Latest version](https://img.shields.io/packagist/v/dealerweb/einvoice)](https://packagist.org/packages/dealerweb/einvoice)
 [![PHP version](https://img.shields.io/packagist/dependency-v/dealerweb/einvoice/php)](https://packagist.org/packages/dealerweb/einvoice)
 [![License](https://img.shields.io/packagist/l/dealerweb/einvoice)](https://github.com/dealerweb/einvoice/blob/main/LICENSE)
