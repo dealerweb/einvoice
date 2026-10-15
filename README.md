@@ -1,5 +1,9 @@
 # dealerweb/einvoice
 
+[![Latest version](https://img.shields.io/packagist/v/dealerweb/einvoice)](https://packagist.org/packages/dealerweb/einvoice)
+[![PHP version](https://img.shields.io/packagist/dependency-v/dealerweb/einvoice/php)](https://packagist.org/packages/dealerweb/einvoice)
+[![License](https://img.shields.io/packagist/l/dealerweb/einvoice)](https://github.com/dealerweb/einvoice/blob/main/LICENSE)
+
 **E-invoicing in pure PHP** - validator, viewer and generator for XRechnung, ZUGFeRD / Factur-X and Peppol BIS, the
 e-invoices of EN 16931 (in Germany: E-Rechnung).
 
