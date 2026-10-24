@@ -122,7 +122,7 @@ Unicode CLDR
 ============
 
 resources/compiled/codelists.php holds display names of countries, currencies and languages in
-German, English and French from the Unicode Common Locale Data Repository (release 48.2.2 of
+German, English and French from the Unicode Common Locale Data Repository (release 49.0.0 of
 https://github.com/unicode-org/cldr-json). Release and checksums: resources/cldr/SOURCE.md.
     UNICODE LICENSE V3
 

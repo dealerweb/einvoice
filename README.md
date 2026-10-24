@@ -428,7 +428,7 @@ CEN and XRechnung 3.0.2 of the KoSIT validator configuration of 2026-08-31, ZUGF
 the French rules 1.4.0.04 of FNFE-MPE),
 compiled from Saxon's execution plan and executed with Saxon's rules of evaluation, down to its errors and its
 comparisons of `-0` and `NaN`; libxml checks the schemas, with the verdict of Xerces where libxml is stricter
-(decimals of more than 24 digits, dates and times with whitespace around them). This is proven for 2,855 documents
+(decimals of more than 24 digits, dates and times with whitespace around them). This is proven for 2,856 documents
 (the official samples, the unit tests of CEN and variants made to fire every rule): every finding equals Saxon's,
 every schema verdict Xerces', every report the KoSIT validator's. Saxon evaluates a variable eagerly once it has
 needed its value twenty times - in earlier documents or earlier in the same one - and may then stop at an error in a
@@ -526,7 +526,7 @@ installation problem, not an error of the invoice.
 ## How it works
 
 - **Reading:** the official mapping of the syntaxes to the semantic model of EN 16931, published by KoSIT as XSLT,
-  runs compiled to PHP; for 227 invoices - the KoSIT test suite, the examples of every profile of the FeRD release,
+  runs compiled to PHP; for 228 invoices - the KoSIT test suite, the examples of every profile of the FeRD release,
   samples of Mustang and horstoeko/zugferd - it gives exactly the output of the stylesheets under Saxon. Two
   deviations are deliberate: an impossible date (30 February) is reported where Saxon aborts, and an indicator written
   as `1` or `0` counts like `true` and `false`, as the EN 16931 validation reads it. The model with readable names is

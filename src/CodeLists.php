@@ -118,7 +118,7 @@ final class CodeLists
     }
 
     /**
-     * The publication the codes are taken from, e.g. "EN 16931 code lists v17b (valid from 2026-05-15), CLDR 48.2.2".
+     * The publication the codes are taken from, e.g. "EN 16931 code lists v17b (valid from 2026-05-15), CLDR 49.0.0".
      */
     public static function source(): string
     {

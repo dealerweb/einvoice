@@ -1,6 +1,6 @@
 <?php
 
-// Code lists (EN 16931 code lists v17b, CLDR 48.2.2): code => names de/en/fr and further columns, business terms per list.
+// Code lists (EN 16931 code lists v17b, CLDR 49.0.0): code => names de/en/fr and further columns, business terms per list.
 // Generated - do not edit.
 
 return [
@@ -10,7 +10,7 @@ return [
         'effective' => '2026-05-15',
         'workbook' => '2_EN16931 code lists values v17b - used from 2026-05-15 - Fx 1.09.2.xlsx',
         'workbook_sha1' => '3a762c016d1d00b252e6a895f0e5bbf1252cd462',
-        'cldr' => '48.2.2',
+        'cldr' => '49.0.0',
     ],
     'notes' => [
         'Mismatch in VATEX codes VATEX-EU-D and VATEX-EU-F',
@@ -120,7 +120,7 @@ return [
                 'GW' => ['de' => 'Guinea-Bissau', 'en' => 'Guinea-Bissau', 'fr' => 'Guinée-Bissau'],
                 'GY' => ['de' => 'Guyana', 'en' => 'Guyana', 'fr' => 'Guyana'],
                 'HK' => ['de' => 'Sonderverwaltungsregion Hongkong', 'en' => 'Hong Kong SAR China', 'fr' => 'R.A.S. chinoise de Hong Kong'],
-                'HM' => ['de' => 'Heard und McDonaldinseln', 'en' => 'Heard & McDonald Islands', 'fr' => 'Îles Heard-et-MacDonald'],
+                'HM' => ['de' => 'Heard und McDonaldinseln', 'en' => 'Heard Island & McDonald Islands', 'fr' => 'Îles Heard-et-MacDonald'],
                 'HN' => ['de' => 'Honduras', 'en' => 'Honduras', 'fr' => 'Honduras'],
                 'HR' => ['de' => 'Kroatien', 'en' => 'Croatia', 'fr' => 'Croatie'],
                 'HT' => ['de' => 'Haiti', 'en' => 'Haiti', 'fr' => 'Haïti'],
@@ -223,7 +223,7 @@ return [
                 'SD' => ['de' => 'Sudan', 'en' => 'Sudan', 'fr' => 'Soudan'],
                 'SE' => ['de' => 'Schweden', 'en' => 'Sweden', 'fr' => 'Suède'],
                 'SG' => ['de' => 'Singapur', 'en' => 'Singapore', 'fr' => 'Singapour'],
-                'SH' => ['de' => 'St. Helena', 'en' => 'St. Helena', 'fr' => 'Sainte-Hélène'],
+                'SH' => ['de' => 'St. Helena', 'en' => 'St. Helena, Ascension & Tristan da Cunha', 'fr' => 'Sainte-Hélène'],
                 'SI' => ['de' => 'Slowenien', 'en' => 'Slovenia', 'fr' => 'Slovénie'],
                 'SJ' => ['de' => 'Spitzbergen und Jan Mayen', 'en' => 'Svalbard & Jan Mayen', 'fr' => 'Svalbard et Jan Mayen'],
                 'SK' => ['de' => 'Slowakei', 'en' => 'Slovakia', 'fr' => 'Slovaquie'],
@@ -240,7 +240,7 @@ return [
                 'SZ' => ['de' => 'Eswatini', 'en' => 'Eswatini', 'fr' => 'Eswatini'],
                 'TC' => ['de' => 'Turks- und Caicosinseln', 'en' => 'Turks & Caicos Islands', 'fr' => 'Îles Turques-et-Caïques'],
                 'TD' => ['de' => 'Tschad', 'en' => 'Chad', 'fr' => 'Tchad'],
-                'TF' => ['de' => 'Französische Süd- und Antarktisgebiete', 'en' => 'French Southern Territories', 'fr' => 'Terres australes françaises'],
+                'TF' => ['de' => 'Französische Süd- und Antarktisgebiete', 'en' => 'French Southern and Antarctic Lands', 'fr' => 'Terres australes françaises'],
                 'TG' => ['de' => 'Togo', 'en' => 'Togo', 'fr' => 'Togo'],
                 'TH' => ['de' => 'Thailand', 'en' => 'Thailand', 'fr' => 'Thaïlande'],
                 'TJ' => ['de' => 'Tadschikistan', 'en' => 'Tajikistan', 'fr' => 'Tadjikistan'],

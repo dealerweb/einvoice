@@ -6,8 +6,8 @@ License 2.0 (see `LICENSE`).
 | | |
 |---|---|
 | Repository | https://github.com/itplr-kosit/xrechnung-visualization |
-| Release | v2026-08-31 (compatible with XRechnung 3.0) |
-| Commit | e158048ec6774cd4837744b21ca34dc95ba14862 |
+| Release | v2026-10-13 (compatible with XRechnung 3.0) |
+| Commit | 811903564db35438abdb3e24fb6cfd37b92dbf78 |
 
 | File | Folder of the release | Content | In the package |
 |---|---|---|---|

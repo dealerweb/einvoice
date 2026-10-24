@@ -7,6 +7,14 @@ part of the public API and may change in any release.
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-10-25
+
+### Changed
+
+- The names of countries, currencies and languages come from Unicode CLDR 49.0.0 (was 48.2.2). Three English
+  country names change: HM "Heard Island & McDonald Islands", SH "St. Helena, Ascension & Tristan da Cunha", TF
+  "French Southern and Antarctic Lands".
+
 ## [1.2.0] - 2026-10-13
 
 ### Added
@@ -117,7 +125,8 @@ First public release.
   ZUGFeRD / Factur-X MINIMUM to EXTENDED as XML and in your own PDF, EN 16931 in UBL, credit notes, Peppol BIS - and
   for reading, checking, converting, showing, attachments, names and errors, with example files of every format.
 
-[Unreleased]: https://github.com/dealerweb/einvoice/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/dealerweb/einvoice/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/dealerweb/einvoice/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/dealerweb/einvoice/compare/v1.1.2...v1.2.0
 [1.1.2]: https://github.com/dealerweb/einvoice/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/dealerweb/einvoice/compare/v1.1.0...v1.1.1
