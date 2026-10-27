@@ -273,7 +273,9 @@ final class NodeReader
             }
         }
         $trimmed = trim($value);
-        $date = $this->tree->dateFormat() === 'Ymd' ? '/^(\d{4})(\d{2})(\d{2})$/' : '/^(\d{4})-(\d{2})-(\d{2})$/';
+        // UBL writes xsd:date, which may carry a time zone ("2026-10-15+02:00", "2026-10-15Z"): the date is the calendar
+        // day, as the date template of KoSIT reads it
+        $date = $this->tree->dateFormat() === 'Ymd' ? '/^(\d{4})(\d{2})(\d{2})$/' : '/^(\d{4})-(\d{2})-(\d{2})(?:Z|[+-]\d{2}:\d{2})?$/';
         if (($format ?? '102') === '102' && preg_match($date, $trimmed, $match) === 1
             && checkdate((int) $match[2], (int) $match[3], (int) $match[1])) {
             return "$match[1]-$match[2]-$match[3]";
