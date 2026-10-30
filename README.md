@@ -397,7 +397,7 @@ The rules come from the specification identifier (BT-24):
 | ZUGFeRD 2.x / Factur-X MINIMUM, BASIC WL, BASIC, EXTENDED (CII) | `Minimum` ... `Extended` | FeRD schema of the profile | FeRD rules of the profile |
 | ZUGFeRD / Factur-X EN 16931: EN 16931 (`urn:cen.eu:en16931:2017`) in the XML of a ZUGFeRD / Factur-X PDF | `En16931` | FeRD schema EN16931 | FeRD rules EN16931 |
 | EN 16931 as XML of its own, UBL or CII | `Core` | UBL 2.1 / CII D16B | EN 16931 (CEN) |
-| Peppol BIS Billing 3.0 (UBL or CII) | `Peppol` | UBL 2.1 / CII D16B | EN 16931 (CEN) and Peppol BIS Billing 3.0 - the package's own implementation of the rules of OpenPeppol (see below) |
+| Peppol BIS Billing 3.0 (UBL or CII): every identifier that begins with the one of Peppol (below) | `Peppol` | UBL 2.1 / CII D16B | EN 16931 (CEN) and Peppol BIS Billing 3.0 - the package's own implementation of the rules of OpenPeppol (see below) |
 | Factur-X EXTENDED-CTC-FR of the French e-invoicing reform (UBL or CII) | `Core` / `Extended` | UBL 2.1 / FeRD schema EXTENDED | the rules of FNFE-MPE for the profile and the French rules BR-FR (see below) |
 | another specification based on EN 16931 (Peppol BIS Self-Billing, another CIUS, XRechnung 2.x) | `Core` | UBL 2.1 / CII D16B | EN 16931 (CEN) - the report notes that the own rules of the specification are not included |
 | anything else | - | - | none: rejected (`NO_SCENARIO`), as by the KoSIT validator |
@@ -428,7 +428,7 @@ CEN and XRechnung 3.0.2 of the KoSIT validator configuration of 2026-08-31, ZUGF
 the French rules 1.4.0.04 of FNFE-MPE),
 compiled from Saxon's execution plan and executed with Saxon's rules of evaluation, down to its errors and its
 comparisons of `-0` and `NaN`; libxml checks the schemas, with the verdict of Xerces where libxml is stricter
-(decimals of more than 24 digits, dates and times with whitespace around them). This is proven for 2,856 documents
+(decimals of more than 24 digits, dates and times with whitespace around them). This is proven for 2,900 documents
 (the official samples, the unit tests of CEN and variants made to fire every rule): every finding equals Saxon's,
 every schema verdict Xerces', every report the KoSIT validator's. Saxon evaluates a variable eagerly once it has
 needed its value twenty times - in earlier documents or earlier in the same one - and may then stop at an error in a
@@ -440,10 +440,13 @@ the JVM, the validator the one of PHP (`date.timezone`) -, and where the regular
 deciding the rule.
 
 The rules of Peppol BIS Billing 3.0 are the package's own implementation of the specification, not the validation
-artefacts of OpenPeppol - with the rule identifiers, flags and verdicts of its release 3.0.20, in UBL and in CII: in
-all unit tests and examples of the release (587 in UBL, 320 in CII) and in every document of the tests they find what
-the official rules find, at the same nodes. The rules of
-EN 16931 they are applied with are the package's (1.3.16; the release of Peppol brings 1.3.15).
+artefacts of OpenPeppol - with the rule identifiers, flags and verdicts of its release 3.0.21, in UBL and in CII: in
+all unit tests and examples of the release (707 in UBL, 351 in CII) and in every document of the tests they find what
+the official rules find, at the same nodes. The rules of EN 16931 they are applied with are the package's (1.3.16),
+the same the release of Peppol brings. They apply to every identifier that begins with the one of Peppol BIS Billing
+3.0, and their rule PEPPOL-EN16931-R004 judges the rest as the Peppol network does: it accepts a specification of
+Peppol (`...billing:3.0#compliant#...`) and rejects a version appended (`...billing:3.0::2.1`) - an appended version
+is no way past the rules of Peppol to those of EN 16931 alone.
 
 A validation takes from a few to a few hundred milliseconds for usual invoices; large ones take about 3 ms per line
 (1,000 lines of XRechnung about 3 s, 1,200 lines of ZUGFeRD EXTENDED about 6 s). The memory needed is about 40 to 60

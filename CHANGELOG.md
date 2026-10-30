@@ -7,6 +7,31 @@ part of the public API and may change in any release.
 
 ## [Unreleased]
 
+## [1.2.3] - 2026-10-30
+
+### Changed
+
+- The rules of Peppol BIS Billing 3.0 follow its release 3.0.21 (mandatory since 2026-08-17, with the hotfix of
+  2026-10-28): a specification identifier with a version appended (`...billing:3.0::2.1`) is an error
+  (PEPPOL-EN16931-R004); the business process is `urn:fdc:peppol.eu:2017:poacc:billing:01:1.0`, the new
+  `urn:peppol:bis:billing_with_response` or, in UBL, one of the two temporary processes of France - other numbers of
+  the form `billing:NN:1.0` are no longer accepted (R007, P0100, P0101); the Danish rules PEPPOL-COMMON-R052, R053,
+  DK-R-003 and DK-R-017 are errors instead of warnings; new warnings check Dutch identifiers (PEPPOL-COMMON-R054 to
+  R057) and, between German parties, that an external document is given as an absolute URL (DE-R-T02); the invoice
+  type code 389 is allowed only between German parties, 384 also between Slovak ones (P0112); the codes of the
+  electronic address schemes and of the currencies are those of the release - an empty scheme is no longer accepted.
+  Between German parties codes are compared without surrounding blanks, the e-mail address of the Seller's contact
+  may hold any character but needs exactly one @, no blank and a dot in its domain, and a cash discount (`#SKONTO#`)
+  has to be a line of its own. In all 707 unit tests and examples of the release in UBL, 351 in CII and in every
+  document of the tests the package's rules find what the official rules find; the rules of EN 16931 they are
+  applied with are the same as those the release brings (1.3.16 of CEN).
+- An invoice whose specification identifier (BT-24) begins with the one of Peppol BIS Billing 3.0 is checked as
+  Peppol BIS Billing 3.0 - before, only the exact identifier was, any other went to EN 16931 alone with a note. The
+  rules of Peppol judge the rest of the identifier as the Peppol network does (PEPPOL-EN16931-R004): a specification
+  of Peppol (`...billing:3.0#compliant#...`) is accepted, a version appended (`...billing:3.0::2.1`) is an error and
+  no longer a way past the rules of Peppol. An identifier with whitespace around it still matches no rules, and a
+  given profile still decides instead (`Profile::Core` for EN 16931 alone).
+
 ## [1.2.2] - 2026-10-27
 
 ### Fixed
@@ -132,7 +157,8 @@ First public release.
   ZUGFeRD / Factur-X MINIMUM to EXTENDED as XML and in your own PDF, EN 16931 in UBL, credit notes, Peppol BIS - and
   for reading, checking, converting, showing, attachments, names and errors, with example files of every format.
 
-[Unreleased]: https://github.com/dealerweb/einvoice/compare/v1.2.2...HEAD
+[Unreleased]: https://github.com/dealerweb/einvoice/compare/v1.2.3...HEAD
+[1.2.3]: https://github.com/dealerweb/einvoice/compare/v1.2.2...v1.2.3
 [1.2.2]: https://github.com/dealerweb/einvoice/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/dealerweb/einvoice/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/dealerweb/einvoice/compare/v1.1.2...v1.2.0

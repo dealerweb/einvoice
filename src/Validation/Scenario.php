@@ -45,17 +45,18 @@ final readonly class Scenario
 
     /**
      * The scenario of a document: for a given profile the one of that profile, otherwise the one its specification
-     * identifier (BT-24) names - XRechnung by KoSIT's scenarios and Peppol BIS Billing 3.0 by its own (both compare
-     * the identifier exactly), ZUGFeRD / Factur-X by the profile in the identifier, the plain EN 16931 identifier as
-     * EN 16931 (KoSIT's scenario) - but in the XML of a ZUGFeRD / Factur-X PDF as the profile ZUGFeRD / Factur-X
-     * EN 16931, which has that identifier: Factur-X is the PDF with its XML (BR-HYBRID-01 of the specification), an
-     * XML of its own that names EN 16931 is an invoice of EN 16931. Other identifiers based on EN 16931 get EN 16931
-     * itself, with a note - not one with whitespace around it: the scenarios do not match it, and an identifier of
-     * XRechnung or Peppol it hides is not checked as EN 16931 alone. An invoice of the French e-invoicing reform - it
-     * names the profile EXTENDED-CTC-FR or gives its processing in a note with the subject code BAR (BR-FR-20) - gets
-     * the French rules BR-FR of FNFE-MPE as well, after those of its scenario, as the French validation applies them;
-     * the profile EXTENDED-CTC-FR itself is checked with the rules of FNFE-MPE for it, in place of those of EN 16931 or
-     * Factur-X EXTENDED.
+     * identifier (BT-24) names - XRechnung by KoSIT's scenarios, which compare the identifier exactly, Peppol BIS
+     * Billing 3.0 by its own for every identifier that begins with the one of Peppol (its rule PEPPOL-EN16931-R004
+     * judges the rest: a version appended is an error, not a way past the rules of Peppol), ZUGFeRD / Factur-X by the
+     * profile in the identifier, the plain EN 16931 identifier as EN 16931 (KoSIT's scenario) - but in the XML of a
+     * ZUGFeRD / Factur-X PDF as the profile ZUGFeRD / Factur-X EN 16931, which has that identifier: Factur-X is the
+     * PDF with its XML (BR-HYBRID-01 of the specification), an XML of its own that names EN 16931 is an invoice of
+     * EN 16931. Other identifiers based on EN 16931 get EN 16931 itself, with a note - not one with whitespace around
+     * it: the scenarios do not match it, and an identifier of XRechnung or Peppol it hides is not checked as EN 16931
+     * alone. An invoice of the French e-invoicing reform - it names the profile EXTENDED-CTC-FR or gives its
+     * processing in a note with the subject code BAR (BR-FR-20) - gets the French rules BR-FR of FNFE-MPE as well,
+     * after those of its scenario, as the French validation applies them; the profile EXTENDED-CTC-FR itself is
+     * checked with the rules of FNFE-MPE for it, in place of those of EN 16931 or Factur-X EXTENDED.
      *
      * @param string $identifier the specification identifier as the document writes it, whitespace included
      * @param bool $hybrid the XML comes from a ZUGFeRD / Factur-X PDF
@@ -288,7 +289,8 @@ final readonly class Scenario
 
     /**
      * The match of KoSIT's scenarios, the same for those of Peppol: the root element, the element path below it and
-     * the identifier compared with the string value of an element or with one of its text nodes.
+     * the identifier compared with the string value of an element or with one of its text nodes - for Peppol with the
+     * beginning of the string value, which has no whitespace around it.
      *
      * @param array<string, mixed> $scenario
      */
@@ -311,6 +313,13 @@ final readonly class Scenario
             $elements = $next;
         }
         foreach ($elements as $element) {
+            if ($scenario['compare'] === 'prefix') {
+                $value = $element->textContent;
+                if ($value === trim($value) && str_starts_with($value, $scenario['identifier'])) {
+                    return true;
+                }
+                continue;
+            }
             if ($scenario['compare'] === 'string') {
                 if ($element->textContent === $scenario['identifier']) {
                     return true;
