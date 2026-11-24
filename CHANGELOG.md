@@ -7,6 +7,11 @@ part of the public API and may change in any release.
 
 ## [Unreleased]
 
+### Changed
+
+- Tested on PHP 8.6 as well: all tests and the comparison with the official validators pass without any message of
+  PHP, and the check of the package on GitHub covers PHP 8.6.
+
 ## [1.2.3] - 2026-10-30
 
 ### Changed
